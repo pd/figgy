@@ -28,6 +28,14 @@ describe Configy do
       config.values.should == { "foo" => 1 }
     end
 
+    it "allows the overlay's value to be the result of a block" do
+      write_config 'prod/values', "foo: 1"
+      config = test_config do |config|
+        config.define_overlay(:environment) { 'prod' }
+      end
+      config.values.should == { "foo" => 1 }
+    end
+
     it "overwrites values if the config file does not define a hash" do
       write_config 'some_string', "foo bar baz"
       write_config 'prod/some_string', "foo bar baz quux"
@@ -95,8 +103,6 @@ describe Configy do
 
       config.values.should == { "foo" => 1, "bar" => 2, "baz" => 3 }
     end
-
-    it "supports files only being defined in an overlay"
   end
 
   context "combined overlays" do

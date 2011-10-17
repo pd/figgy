@@ -37,7 +37,8 @@ class Configy
       @root = File.expand_path(path)
     end
 
-    def define_overlay(name, value)
+    def define_overlay(name, value = nil)
+      value = yield if block_given?
       @overlays << [name, value]
     end
 
