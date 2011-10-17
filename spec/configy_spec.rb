@@ -45,4 +45,12 @@ describe Configy do
   it "loads in order of overlay definition"
   it "works with nil overlay"
   it "works with nil + another overlay"
+
+  it "should support reloading on each access"
+  it "should support temporal reloading"
+  it "should support pre-loading"
+  it "should support not reloading"
+
+  it "should support freezing the contents"
+  it "should support NOT freezing the contents"
 end
