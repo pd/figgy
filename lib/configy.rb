@@ -39,19 +39,13 @@ class Configy
       @overlays << [name, value]
     end
 
-    def overlay_names
-      @overlays.map &:first
-    end
-
     def overlay_values
       @overlays.map &:last
     end
 
     def overlay_dirs
       return [@root] if @overlays.empty?
-      @overlays.map { |name, value|
-        value ? File.join(@root, value) : @root
-      }.uniq
+      overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
     end
 
     def each_overlay_dir(&block)
@@ -71,14 +65,20 @@ class Configy
         path = File.join(dir, "#{name}.yml")
 
         next unless File.exist?(path)
-        if result && result.respond_to?(:merge!)
-          result.merge!(YAML.load(File.read(path)))
+        if result && result.respond_to?(:merge)
+          result = deep_merge(result, YAML.load(File.read(path)))
         else
           result = YAML.load(File.read(path))
         end
       end
 
       result
+    end
+
+    def deep_merge(a, b)
+      a.merge(b) do |key, oldval, newval|
+        oldval.respond_to?(:merge) && newval.respond_to?(:merge) ? deep_merge(oldval, newval) : newval
+      end
     end
   end
 end

@@ -48,6 +48,27 @@ describe Configy do
       config.values.should == { "foo" => 2 }
     end
 
+    it "deep merges hash contents" do
+      write_config 'defaults/values', <<-YML
+      foo:
+        bar: 1
+        baz: 2
+      YML
+
+      write_config 'prod/values', <<-YML
+      foo:
+        baz: 3
+      quux: hi!
+      YML
+
+      config = test_config do |config|
+        config.define_overlay :default, 'defaults'
+        config.define_overlay :environment, 'prod'
+      end
+
+      config.values.should == { "foo" => { "bar" => 1, "baz" => 3 }, "quux" => "hi!" }
+    end
+
     it "can use both a nil overlay and an overlay with a value" do
       write_config 'values', "foo: 1\nbar: 2"
       write_config 'prod/values', "foo: 2"
@@ -86,10 +107,7 @@ describe Configy do
 end
 
 describe Configy do
-  it "doesn't merge unmergeables"
-  it "deep merges"
   it "blows up if it can't find a file"
-  it "works with nil + another overlay"
 
   it "should support reloading on each access"
   it "should support temporal reloading"
