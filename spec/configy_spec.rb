@@ -10,6 +10,10 @@ describe Configy do
     test_config.values.should == { "foo" => 1, "bar" => 2 }
   end
 
+  it "raises an exception if the file can't be found" do
+    expect { test_config.values }.to raise_error(Configy::FileNotFound)
+  end
+
   context "overlays" do
     it "defaults to no overlay, thus reading directly from the config root" do
       write_config 'values', "foo: 1"
@@ -107,8 +111,6 @@ describe Configy do
 end
 
 describe Configy do
-  it "blows up if it can't find a file"
-
   it "should support reloading on each access"
   it "should support temporal reloading"
   it "should support pre-loading"

@@ -2,6 +2,8 @@ require "configy/version"
 require "yaml"
 
 class Configy
+  FileNotFound = Class.new(StandardError)
+
   def self.build(&block)
     config = Configuration.new
     block.call(config)
@@ -47,10 +49,6 @@ class Configy
       return [@root] if @overlays.empty?
       overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
     end
-
-    def each_overlay_dir(&block)
-      overlay_dirs.each(&block)
-    end
   end
 
   class Finder
@@ -59,21 +57,25 @@ class Configy
     end
 
     def load(name)
-      result = nil
+      filename = "#{name}.yml"
 
-      @config.each_overlay_dir do |dir|
-        path = File.join(dir, "#{name}.yml")
+      result = @config.overlay_dirs.reduce(nil) do |result, dir|
+        path = File.join(dir, filename)
+        next result unless File.exist?(path)
 
-        next unless File.exist?(path)
+        object = YAML.load(File.read(path))
         if result && result.respond_to?(:merge)
-          result = deep_merge(result, YAML.load(File.read(path)))
+          deep_merge(result, object)
         else
-          result = YAML.load(File.read(path))
+          object
         end
       end
 
+      raise(Configy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
       result
     end
+
+    private
 
     def deep_merge(a, b)
       a.merge(b) do |key, oldval, newval|
