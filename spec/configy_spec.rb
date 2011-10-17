@@ -40,19 +40,7 @@ describe Configy do
       config.some_string.should == "foo bar baz quux"
     end
 
-    it "merges hash contents from overlays" do
-      write_config 'defaults/values', "foo: 1"
-      write_config 'prod/values', "foo: 2"
-
-      config = test_config do |config|
-        config.define_overlay :default, 'defaults'
-        config.define_overlay :environment, 'prod'
-      end
-
-      config.values.should == { "foo" => 2 }
-    end
-
-    it "deep merges hash contents" do
+    it "deep merges hash contents from overlays" do
       write_config 'defaults/values', <<-YML
       foo:
         bar: 1
@@ -107,6 +95,25 @@ describe Configy do
 
       config.values.should == { "foo" => 1, "bar" => 2, "baz" => 3 }
     end
+
+    it "supports files only being defined in an overlay"
+  end
+
+  context "combined overlays" do
+    it "allows new overlays to be defined from the values of others" do
+      write_config 'keys', "foo: 1"
+      write_config 'prod/keys', "foo: 2"
+      write_config 'prod_US/keys', "foo: 3"
+
+      config = test_config do |config|
+        config.define_overlay :default, nil
+        config.define_overlay :environment, 'prod'
+        config.define_overlay :country, 'US'
+        config.define_combined_overlay :environment, :country
+      end
+
+      config.keys.should == { "foo" => 3 }
+    end
   end
 end
 
@@ -120,4 +127,6 @@ describe Configy do
   it "should support NOT freezing the contents"
 
   it "should maybe support .yml.erb"
+
+  it "should maybe support path_formatter = some_proc.call(config_name, overlays)"
 end

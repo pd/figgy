@@ -41,6 +41,18 @@ class Configy
       @overlays << [name, value]
     end
 
+    def define_combined_overlay(*names)
+      combined_name = names.join("_").to_sym
+      value = names.map { |name| overlay_value(name) }.join("_")
+      @overlays << [combined_name, value]
+    end
+
+    def overlay_value(name)
+      overlay = @overlays.find { |n, v| name == n }
+      raise "No such overlay: #{name.inspect}" unless overlay
+      overlay.last
+    end
+
     def overlay_values
       @overlays.map &:last
     end
