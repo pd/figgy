@@ -13,28 +13,55 @@ class Configy
   def initialize(config)
     @config = config
     @finder = Finder.new(config)
-    @cache  = {}
+    @store  = Store.new(@finder, @config)
   end
 
   def method_missing(m, *args, &block)
-    m = m.to_s
-    if @cache.key?(m)
-      @cache[m]
-    else
-      @cache[m] = @finder.load(m)
+    @store.get(m)
+  end
+
+  class Store
+    def initialize(finder, config)
+      @finder = finder
+      @config = config
+      @cache  = {}
+    end
+
+    def get(key)
+      key = key.to_s
+      maybe_invalidate(key)
+      if @cache.key?(key)
+        @cache[key]
+      else
+        @cache[key] = @finder.load(key)
+      end
+    end
+
+    private
+
+    def maybe_invalidate(key)
+      if @config.always_reload? # || stale?
+        @cache.delete(key)
+      end
     end
   end
 
   class Configuration
     attr_reader :root, :overlays
+    attr_accessor :always_reload
 
     def initialize
       self.root = Dir.pwd
       @overlays = []
+      @always_reload = false
     end
 
     def root=(path)
       @root = File.expand_path(path)
+    end
+
+    def always_reload?
+      @always_reload
     end
 
     def define_overlay(name, value = nil)
@@ -48,6 +75,13 @@ class Configy
       @overlays << [combined_name, value]
     end
 
+    def overlay_dirs
+      return [@root] if @overlays.empty?
+      overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
+    end
+
+    private
+
     def overlay_value(name)
       overlay = @overlays.find { |n, v| name == n }
       raise "No such overlay: #{name.inspect}" unless overlay
@@ -56,11 +90,6 @@ class Configy
 
     def overlay_values
       @overlays.map &:last
-    end
-
-    def overlay_dirs
-      return [@root] if @overlays.empty?
-      overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
     end
   end
 
