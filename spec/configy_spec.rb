@@ -148,8 +148,6 @@ describe Configy do
 end
 
 describe Configy do
-  it "should support reloading on each access"
-  it "should support temporal reloading"
   it "should support pre-loading"
   it "should support not reloading"
 
