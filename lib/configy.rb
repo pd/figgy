@@ -1,5 +1,5 @@
 require "configy/version"
-require 'yaml'
+require "yaml"
 
 class Configy
   def self.build(&block)
@@ -24,21 +24,38 @@ class Configy
   end
 
   class Configuration
-    attr_accessor :root, :overlays
+    attr_reader :root, :overlays
 
     def initialize
-      @root = Dir.pwd
+      self.root = Dir.pwd
       @overlays = []
+    end
+
+    def root=(path)
+      @root = File.expand_path(path)
     end
 
     def define_overlay(name, value)
       @overlays << [name, value]
     end
 
-    def each_overlay_dir
-      @overlays.each do |name, value|
-        yield File.join(@root, value)
-      end
+    def overlay_names
+      @overlays.map &:first
+    end
+
+    def overlay_values
+      @overlays.map &:last
+    end
+
+    def overlay_dirs
+      return [@root] if @overlays.empty?
+      @overlays.map { |name, value|
+        value ? File.join(@root, value) : @root
+      }.uniq
+    end
+
+    def each_overlay_dir(&block)
+      overlay_dirs.each(&block)
     end
   end
 
