@@ -20,7 +20,11 @@ describe Configy do
       test_config.values.foo.should == 1
     end
 
-    it "supports .yml.erb and .yaml.erb"
+    it "supports .yml.erb and .yaml.erb" do
+      write_config 'values.yml.erb', '<%= "foo" %>: <%= 1 %>'
+      write_config 'values.yaml.erb', '<%= "foo" %>: <%= 2 %>'
+      test_config.values.foo.should == 2
+    end
 
     it "supports .json"
 

@@ -14,6 +14,11 @@ class Configy
       define_handler 'yml', 'yaml' do |contents|
         YAML.load(contents)
       end
+
+      define_handler 'yml.erb', 'yaml.erb' do |contents|
+        erb = ERB.new(contents).result
+        YAML.load(erb)
+      end
     end
 
     def root=(path)
@@ -57,8 +62,7 @@ class Configy
     end
 
     def handler_for(filename)
-      extension = File.extname(filename).sub(/^\./, '')
-      match = @handlers.find { |ext, handler| extension == ext }
+      match = @handlers.find { |ext, handler| filename =~ /\.#{ext}$/ }
       match && match.last
     end
 

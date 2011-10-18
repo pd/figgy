@@ -6,7 +6,7 @@ class Configy
 
     def load(name)
       result = files_for(name).reduce(nil) do |result, file|
-        object = YAML.load(File.read(file))
+        object = @config.handler_for(file).call(File.read(file))
         if result && result.respond_to?(:merge)
           deep_merge(result, object)
         else
