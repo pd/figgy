@@ -1,15 +1,19 @@
 class Configy
   class Configuration
     attr_reader :root, :overlays
-    attr_accessor :always_reload, :preload, :freeze, :extensions
+    attr_accessor :always_reload, :preload, :freeze
 
     def initialize
       self.root = Dir.pwd
-      @extensions = ['yml', 'yaml']
+      @handlers = []
       @overlays = []
       @always_reload = false
       @preload = false
       @freeze = false
+
+      define_handler 'yml', 'yaml' do |contents|
+        YAML.load(contents)
+      end
     end
 
     def root=(path)
@@ -42,6 +46,20 @@ class Configy
     def overlay_dirs
       return [@root] if @overlays.empty?
       overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
+    end
+
+    def define_handler(*extensions, &block)
+      @handlers += extensions.map { |ext| [ext, block] }
+    end
+
+    def extensions
+      @handlers.map { |ext, handler| ext }
+    end
+
+    def handler_for(filename)
+      extension = File.extname(filename).sub(/^\./, '')
+      match = @handlers.find { |ext, handler| extension == ext }
+      match && match.last
     end
 
     private

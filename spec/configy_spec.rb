@@ -21,13 +21,16 @@ describe Configy do
     end
 
     it "supports .yml.erb and .yaml.erb"
+
     it "supports .json"
 
     it "loads in the order named" do
       write_config 'values.yml', 'foo: 1'
       write_config 'values.yaml', 'foo: 2'
 
-      config = test_config { |config| config.extensions = %w[yml yaml] }
+      config = test_config do |config|
+        config.define_handler('yml', 'yaml') { |body| YAML.load(body) }
+      end
       config.values.foo.should == 2
     end
   end
