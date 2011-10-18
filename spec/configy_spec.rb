@@ -14,6 +14,53 @@ describe Configy do
     expect { test_config.values }.to raise_error(Configy::FileNotFound)
   end
 
+  context "hash contents" do
+    it "makes the hash result dottable and indifferent" do
+      write_config 'values', <<-YML
+      outer:
+        also: dottable
+      YML
+
+      config = test_config
+      config.values.outer.should == { "also" => "dottable" }
+      config.values["outer"].should == { "also" => "dottable" }
+      config.values[:outer].should == { "also" => "dottable" }
+    end
+
+    it "makes a hash inside the hash result dottable and indifferent" do
+      write_config 'values', <<-YML
+      outer:
+        also: dottable
+      YML
+
+      config = test_config
+      config.values.outer.also.should == "dottable"
+      config.values.outer["also"].should == "dottable"
+      config.values.outer[:also].should == "dottable"
+    end
+
+    it "makes a hash inside an array result dottable and indifferent" do
+      write_config 'values', <<-YML
+      outer:
+        - in: an
+          array: it is
+        - still: a dottable hash
+      YML
+
+      config = test_config
+      config.values.outer.size.should == 2
+      first, second = *config.values.outer
+
+      first.should == { "in" => "an", "array" => "it is" }
+      first[:in].should == "an"
+      first.array.should == "it is"
+
+      second.still.should == "a dottable hash"
+      second[:still].should == "a dottable hash"
+      second["still"].should == "a dottable hash"
+    end
+  end
+
   context "overlays" do
     it "defaults to no overlay, thus reading directly from the config root" do
       write_config 'values', "foo: 1"
@@ -182,11 +229,6 @@ describe Configy do
 end
 
 describe Configy do
-  it "makes hash contents dottable"
-  it "makes deep hash contents dottable (including in arrays!)"
-  it "makes hash contents indifferent"
-  it "makes deep hash contents indifferent (including in arrays!)"
-
   it "should support freezing the contents"
   it "should support NOT freezing the contents"
   it "freezes content all the way down"

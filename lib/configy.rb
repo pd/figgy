@@ -1,8 +1,9 @@
 require "yaml"
 require "configy/version"
 require "configy/configuration"
-require "configy/store"
+require "configy/hash"
 require "configy/finder"
+require "configy/store"
 
 class Configy
   FileNotFound = Class.new(StandardError)
