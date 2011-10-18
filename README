@@ -5,10 +5,12 @@ In Gemfile:
 Configure (say, in a Rails initializer):
 
     APP_CONFIG = Configy.build do |config|
-      config.root = Rails.root.join('etc') # Already the default
+      config.root = Rails.root.join('etc')
+
       # config.foo is read from etc/foo.yml
       config.define_overlay :default, nil
-      # config.foo is updated with values from etc/production/foo.yml
+
+      # config.foo is then updated with values from etc/production/foo.yml
       config.define_overlay(:environment) { Rails.env }
     end
 
