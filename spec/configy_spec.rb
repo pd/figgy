@@ -182,8 +182,14 @@ describe Configy do
 end
 
 describe Configy do
+  it "makes hash contents dottable"
+  it "makes deep hash contents dottable (including in arrays!)"
+  it "makes hash contents indifferent"
+  it "makes deep hash contents indifferent (including in arrays!)"
+
   it "should support freezing the contents"
   it "should support NOT freezing the contents"
+  it "freezes content all the way down"
 
   it "should maybe support .yml.erb"
 
