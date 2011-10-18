@@ -1,13 +1,14 @@
 class Configy
   class Configuration
     attr_reader :root, :overlays
-    attr_accessor :always_reload, :preload
+    attr_accessor :always_reload, :preload, :freeze
 
     def initialize
       self.root = Dir.pwd
       @overlays = []
       @always_reload = false
       @preload = false
+      @freeze = false
     end
 
     def root=(path)
@@ -20,6 +21,10 @@ class Configy
 
     def preload?
       !!@preload
+    end
+
+    def freeze?
+      !!@freeze
     end
 
     def define_overlay(name, value = nil)

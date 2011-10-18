@@ -20,7 +20,7 @@ class Configy
       end
 
       raise(Configy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
-      to_configy_hash(result)
+      deep_freeze(to_configy_hash(result))
     end
 
     def all_key_names
@@ -42,6 +42,17 @@ class Configy
       else
         obj
       end
+    end
+
+    def deep_freeze(obj)
+      return obj unless @config.freeze?
+      case obj
+      when ::Hash
+        obj.each_pair { |k, v| obj[deep_freeze(k)] = deep_freeze(v) }
+      when Array
+        obj.map! { |v| deep_freeze(v) }
+      end
+      obj.freeze
     end
 
     def deep_merge(a, b)
