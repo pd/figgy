@@ -5,13 +5,8 @@ class Configy
     end
 
     def load(name)
-      filename = "#{name}.yml"
-
-      result = @config.overlay_dirs.reduce(nil) do |result, dir|
-        path = File.join(dir, filename)
-        next result unless File.exist?(path)
-
-        object = YAML.load(File.read(path))
+      result = files_for(name).reduce(nil) do |result, file|
+        object = YAML.load(File.read(file))
         if result && result.respond_to?(:merge)
           deep_merge(result, object)
         else
@@ -21,6 +16,17 @@ class Configy
 
       raise(Configy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
       deep_freeze(to_configy_hash(result))
+    end
+
+    def files_for(name)
+      @config.overlay_dirs.reduce([]) { |acc, dir|
+        next acc unless File.directory?(dir)
+        exts = @config.extensions.map { |ext| "*.#{ext}" }
+        files = Dir.chdir(dir) do
+          Dir[*exts].map { |dir| File.expand_path(dir) }
+        end
+        acc + files
+      }
     end
 
     def all_key_names

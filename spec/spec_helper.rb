@@ -16,7 +16,8 @@ module Configy::SpecHelpers
   end
 
   def write_config(filename, contents)
-    write_file("#{filename}.yml", contents.unindent)
+    filename = "#{filename}.yml" unless filename =~ /\./
+    write_file(filename, contents.unindent)
   end
 end
 

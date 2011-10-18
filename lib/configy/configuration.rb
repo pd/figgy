@@ -1,10 +1,11 @@
 class Configy
   class Configuration
     attr_reader :root, :overlays
-    attr_accessor :always_reload, :preload, :freeze
+    attr_accessor :always_reload, :preload, :freeze, :extensions
 
     def initialize
       self.root = Dir.pwd
+      @extensions = ['yml', 'yaml']
       @overlays = []
       @always_reload = false
       @preload = false

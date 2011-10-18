@@ -14,6 +14,24 @@ describe Configy do
     expect { test_config.values }.to raise_error(Configy::FileNotFound)
   end
 
+  context "multiple extensions" do
+    it "supports .yaml" do
+      write_config 'values.yaml', 'foo: 1'
+      test_config.values.foo.should == 1
+    end
+
+    it "supports .yml.erb and .yaml.erb"
+    it "supports .json"
+
+    it "loads in the order named" do
+      write_config 'values.yml', 'foo: 1'
+      write_config 'values.yaml', 'foo: 2'
+
+      config = test_config { |config| config.extensions = %w[yml yaml] }
+      config.values.foo.should == 2
+    end
+  end
+
   context "hash contents" do
     it "makes the hash result dottable and indifferent" do
       write_config 'values', <<-YML
@@ -211,6 +229,8 @@ describe Configy do
       config.values['foo'].should == 2
       config.prod_only['bar'].should == 'baz'
     end
+
+    it "still works with multiple extension support"
 
     it "still supports reloading when preloading is enabled" do
       write_config 'values', 'foo: 1'
