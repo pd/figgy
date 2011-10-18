@@ -145,16 +145,49 @@ describe Configy do
       config.values.should == { "foo" => 1 }
     end
   end
+
+  context "preloading" do
+    it "can preload all available configs when config.preload = true" do
+      write_config 'values', 'foo: 1'
+      write_config 'prod/values', 'foo: 2'
+      write_config 'prod/prod_only', 'bar: baz'
+
+      config = test_config do |config|
+        config.define_overlay :default, nil
+        config.define_overlay :environment, 'prod'
+        config.preload = true
+      end
+
+      write_config 'prod/values', 'foo: 3'
+      write_config 'prod_only', 'bar: quux'
+
+      config.values['foo'].should == 2
+      config.prod_only['bar'].should == 'baz'
+    end
+
+    it "still supports reloading when preloading is enabled" do
+      write_config 'values', 'foo: 1'
+
+      config = test_config do |config|
+        config.preload = true
+        config.always_reload = true
+      end
+
+      config.values['foo'].should == 1
+
+      write_config 'values', 'foo: 2'
+      config.values['foo'].should == 2
+    end
+  end
 end
 
 describe Configy do
-  it "should support pre-loading"
-  it "should support not reloading"
-
   it "should support freezing the contents"
   it "should support NOT freezing the contents"
 
   it "should maybe support .yml.erb"
 
   it "should maybe support path_formatter = some_proc.call(config_name, overlays)"
+  it "should support preload's all_key_names when using path_formatter"
+  it "should support preload's all_key_names when using path_formatter"
 end

@@ -14,6 +14,10 @@ class Configy
     @config = config
     @finder = Finder.new(config)
     @store  = Store.new(@finder, @config)
+
+    if @config.preload?
+      @finder.all_key_names.each { |key| @store.get(key) }
+    end
   end
 
   def method_missing(m, *args, &block)
@@ -48,12 +52,13 @@ class Configy
 
   class Configuration
     attr_reader :root, :overlays
-    attr_accessor :always_reload
+    attr_accessor :always_reload, :preload
 
     def initialize
       self.root = Dir.pwd
       @overlays = []
       @always_reload = false
+      @preload = false
     end
 
     def root=(path)
@@ -61,7 +66,11 @@ class Configy
     end
 
     def always_reload?
-      @always_reload
+      !!@always_reload
+    end
+
+    def preload?
+      !!@preload
     end
 
     def define_overlay(name, value = nil)
@@ -115,6 +124,13 @@ class Configy
 
       raise(Configy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
       result
+    end
+
+    def all_key_names
+      @config.overlay_dirs.reduce([]) { |acc, dir|
+        files = Dir.chdir(dir) { Dir['*.yml'] }
+        acc += files.map { |file| file.sub(/\.yml$/, '') }
+      }.uniq
     end
 
     private
