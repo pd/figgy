@@ -1,4 +1,7 @@
 require "yaml"
+require "erb"
+require "json"
+
 require "configy/version"
 require "configy/configuration"
 require "configy/hash"

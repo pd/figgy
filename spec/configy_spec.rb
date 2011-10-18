@@ -26,7 +26,10 @@ describe Configy do
       test_config.values.foo.should == 2
     end
 
-    it "supports .json"
+    it "supports .json" do
+      write_config "values.json", '{ "json": true }'
+      test_config.values.json.should be_true
+    end
 
     it "loads in the order named" do
       write_config 'values.yml', 'foo: 1'
@@ -297,8 +300,9 @@ describe Configy do
 end
 
 describe Configy do
-  it "should maybe support .yml.erb"
-  it "should maybe support path_formatter = some_proc.call(config_name, overlays)"
-  it "should support preload's all_key_names when using path_formatter"
-  it "should support preload's all_key_names when using path_formatter"
+  describe 'CnuConfig drop-in compatibility' do
+    it "should maybe support path_formatter = some_proc.call(config_name, overlays)"
+    it "should support preload's all_key_names when using path_formatter"
+    it "should support preload's all_key_names when using path_formatter"
+  end
 end

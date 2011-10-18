@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "configy"
   s.version     = Configy::VERSION
   s.authors     = ["Kyle Hargraves"]
-  s.email       = ["rhargraves@enovafinancial.com"]
+  s.email       = ["pd@krh.me"
   s.homepage    = ""
   s.summary     = %q{Smart YAML config loading library}
   s.description = %q{TODO}
@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
+  s.add_dependency "json"
   s.add_development_dependency "rspec"
   s.add_development_dependency "simplecov"
   s.add_development_dependency "aruba"

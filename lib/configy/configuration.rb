@@ -19,6 +19,10 @@ class Configy
         erb = ERB.new(contents).result
         YAML.load(erb)
       end
+
+      define_handler 'json' do |contents|
+        JSON.parse(contents)
+      end
     end
 
     def root=(path)
