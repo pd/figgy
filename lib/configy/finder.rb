@@ -30,13 +30,17 @@ class Configy
     end
 
     def all_key_names
-      @config.overlay_dirs.reduce([]) { |acc, dir|
-        files = Dir.chdir(dir) { Dir['*.yml'] }
-        acc + files.map { |file| file.sub(/\.yml$/, '') }
-      }.uniq
+      Dir[*all_configs_globs].map { |file| File.basename(file).sub(/\..+$/, '') }.uniq
     end
 
     private
+
+    def all_configs_globs
+      exts = @config.extensions.map { |ext| "*.#{ext}" }
+      @config.overlay_dirs.map { |dir|
+        exts.map { |ext| File.join(dir, ext) }
+      }.flatten
+    end
 
     def to_configy_hash(obj)
       case obj
