@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "configy"
   s.version     = Configy::VERSION
   s.authors     = ["Kyle Hargraves"]
-  s.email       = ["pd@krh.me"
+  s.email       = ["pd@krh.me"]
   s.homepage    = ""
   s.summary     = %q{Smart YAML config loading library}
   s.description = %q{TODO}
