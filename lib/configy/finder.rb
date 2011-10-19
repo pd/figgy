@@ -19,27 +19,24 @@ class Configy
     end
 
     def files_for(name)
-      @config.overlay_dirs.reduce([]) { |acc, dir|
-        next acc unless File.directory?(dir)
-        exts = @config.extensions.map { |ext| "*.#{ext}" }
-        files = Dir.chdir(dir) do
-          Dir[*exts].map { |dir| File.expand_path(dir) }
-        end
-        acc + files
-      }
+      Dir[*file_globs(name)]
     end
 
     def all_key_names
-      Dir[*all_configs_globs].map { |file| File.basename(file).sub(/\..+$/, '') }.uniq
+      Dir[*file_globs].map { |file| File.basename(file).sub(/\..+$/, '') }.uniq
     end
 
     private
 
-    def all_configs_globs
-      exts = @config.extensions.map { |ext| "*.#{ext}" }
+    def file_globs(name = '*')
+      globs = extension_globs(name)
       @config.overlay_dirs.map { |dir|
-        exts.map { |ext| File.join(dir, ext) }
+        globs.map { |glob| File.join(dir, glob) }
       }.flatten
+    end
+
+    def extension_globs(name = '*')
+      @config.extensions.map { |ext| "#{name}.#{ext}" }
     end
 
     def to_configy_hash(obj)
