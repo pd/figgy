@@ -2,13 +2,13 @@ require "yaml"
 require "erb"
 require "json"
 
-require "configy/version"
-require "configy/configuration"
-require "configy/hash"
-require "configy/finder"
-require "configy/store"
+require "figgy/version"
+require "figgy/configuration"
+require "figgy/hash"
+require "figgy/finder"
+require "figgy/store"
 
-class Configy
+class Figgy
   FileNotFound = Class.new(StandardError)
 
   def self.build(&block)

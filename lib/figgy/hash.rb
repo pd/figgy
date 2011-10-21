@@ -1,4 +1,4 @@
-class Configy
+class Figgy
   # Stolen from Thor::CoreExt::HashWithIndifferentAccess
   # It's smaller and more grokkable than ActiveSupport's.
   class Hash < ::Hash

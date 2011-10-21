@@ -1,10 +1,10 @@
 In Gemfile:
 
-    gem 'configy', git: '...'
+    gem 'figgy'
 
 Configure (say, in a Rails initializer):
 
-    APP_CONFIG = Configy.build do |config|
+    APP_CONFIG = Figgy.build do |config|
       config.root = Rails.root.join('etc')
 
       # config.foo is read from etc/foo.yml

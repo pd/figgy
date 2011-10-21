@@ -1,4 +1,4 @@
-class Configy
+class Figgy
   class Store
     def initialize(finder, config)
       @finder = finder

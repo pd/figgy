@@ -1,4 +1,4 @@
-class Configy
+class Figgy
   class Finder
     def initialize(config)
       @config = config
@@ -14,7 +14,7 @@ class Configy
         end
       end
 
-      raise(Configy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
+      raise(Figgy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
       deep_freeze(to_configy_hash(result))
     end
 
@@ -43,7 +43,7 @@ class Configy
       case obj
       when ::Hash
         obj.each_pair { |k, v| obj[k] = to_configy_hash(v) }
-        Configy::Hash.new(obj)
+        Figgy::Hash.new(obj)
       when Array
         obj.map { |v| to_configy_hash(v) }
       else

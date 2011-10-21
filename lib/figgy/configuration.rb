@@ -1,4 +1,4 @@
-class Configy
+class Figgy
   class Configuration
     attr_reader :root, :overlays
     attr_accessor :always_reload, :preload, :freeze
