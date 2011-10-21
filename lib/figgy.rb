@@ -30,4 +30,13 @@ class Figgy
   def method_missing(m, *args, &block)
     @store.get(m)
   end
+
+  def inspect
+    if @store.size > 0
+      key_names = @store.keys.sort
+      "#<Figgy (#{@store.size} keys): #{key_names.join(' ')}>"
+    else
+      "#<Figgy (empty)>"
+    end
+  end
 end

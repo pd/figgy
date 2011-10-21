@@ -14,6 +14,20 @@ describe Figgy do
     expect { test_config.values }.to raise_error(Figgy::FileNotFound)
   end
 
+  it "has a useful #inspect method" do
+    write_config 'values', 'foo: 1'
+    write_config 'wtf', 'bar: 2'
+
+    config = test_config
+    config.inspect.should == "#<Figgy (empty)>"
+
+    config.values
+    config.inspect.should == "#<Figgy (1 keys): values>"
+
+    config.wtf
+    config.inspect.should == "#<Figgy (2 keys): values wtf>"
+  end
+
   context "multiple extensions" do
     it "supports .yaml" do
       write_config 'values.yaml', 'foo: 1'

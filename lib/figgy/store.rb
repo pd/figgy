@@ -6,7 +6,7 @@ class Figgy
       @cache  = {}
     end
 
-    def get(key)
+    def get(key, skip_reload = false)
       key = key.to_s
       @cache.delete(key) if @config.always_reload?
       if @cache.key?(key)
@@ -14,6 +14,14 @@ class Figgy
       else
         @cache[key] = @finder.load(key)
       end
+    end
+
+    def keys
+      @cache.keys
+    end
+
+    def size
+      @cache.size
     end
   end
 end
