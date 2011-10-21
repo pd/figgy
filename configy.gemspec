@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version     = Configy::VERSION
   s.authors     = ["Kyle Hargraves"]
   s.email       = ["pd@krh.me"]
-  s.homepage    = ""
-  s.summary     = %q{Smart YAML config loading library}
-  s.description = %q{TODO}
+  s.homepage    = "http://github.com/pd/configy"
+  s.summary     = %q{Configuration file reading}
+  s.description = %q{Access YAML, JSON (and ...) configuration files with ease}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
