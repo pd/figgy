@@ -299,7 +299,7 @@ describe Configy do
         config.freeze = true
       end
 
-      expect { config.values.outer.array[2]['and'] = 'foo' }.to raise_error(RuntimeError, /frozen/)
+      expect { config.values.outer.array[2]['and'] = 'foo' }.to raise_error(/can't modify frozen/)
       assert_deeply_frozen(config.values)
     end
 
