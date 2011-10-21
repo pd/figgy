@@ -15,7 +15,7 @@ class Figgy
       end
 
       raise(Figgy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
-      deep_freeze(to_configy_hash(result))
+      deep_freeze(to_figgy_hash(result))
     end
 
     def files_for(name)
@@ -39,13 +39,13 @@ class Figgy
       @config.extensions.map { |ext| "#{name}.#{ext}" }
     end
 
-    def to_configy_hash(obj)
+    def to_figgy_hash(obj)
       case obj
       when ::Hash
-        obj.each_pair { |k, v| obj[k] = to_configy_hash(v) }
+        obj.each_pair { |k, v| obj[k] = to_figgy_hash(v) }
         Figgy::Hash.new(obj)
       when Array
-        obj.map { |v| to_configy_hash(v) }
+        obj.map { |v| to_figgy_hash(v) }
       else
         obj
       end
