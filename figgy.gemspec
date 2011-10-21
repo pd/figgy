@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = Figgy::VERSION
   s.authors     = ["Kyle Hargraves"]
   s.email       = ["pd@krh.me"]
-  s.homepage    = "http://github.com/pd/configy"
+  s.homepage    = "http://github.com/pd/figgy"
   s.summary     = %q{Configuration file reading}
   s.description = %q{Access YAML, JSON (and ...) configuration files with ease}
 
