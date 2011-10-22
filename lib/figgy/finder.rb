@@ -4,6 +4,18 @@ class Figgy
       @config = config
     end
 
+    # Searches for files defining the configuration key +name+, merging each
+    # instance found with the previous. In this way, the overlay configuration
+    # at +production/foo.yml+ can override values in +foo.yml+.
+    #
+    # If the contents of the file were a Hash, Figgy will translate it into
+    # a {Figgy::Hash Figgy::Hash} and perform deep-merging for all overlays. This
+    # allows you to override only a single key deep within the configuration, and to
+    # access it using dot-notation, symbol keys or string keys.
+    #
+    # @param [String] name the configuration file to load
+    # @return Whatever was in the config file loaded
+    # @raise [Figgy::FileNotFound] if no config file could be found for +name+
     def load(name)
       result = files_for(name).reduce(nil) do |result, file|
         object = @config.handler_for(file).call(File.read(file))
@@ -18,10 +30,13 @@ class Figgy
       deep_freeze(to_figgy_hash(result))
     end
 
+    # @param [String] name the configuration key to search for
+    # @return [Array<String>] the paths to all files to load for configuration key +name+
     def files_for(name)
       Dir[*file_globs(name)]
     end
 
+    # @return [Array<String>] the names of all unique configuration keys
     def all_key_names
       Dir[*file_globs].map { |file| File.basename(file).sub(/\..+$/, '') }.uniq
     end

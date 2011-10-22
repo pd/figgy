@@ -1,8 +1,25 @@
 class Figgy
   class Configuration
-    attr_reader :root, :overlays
-    attr_accessor :always_reload, :preload, :freeze
+    # The directory in which to search for configuration files
+    attr_reader :root
 
+    # The list of defined overlays
+    attr_reader :overlays
+
+    # Whether to reload a configuration file each time it is accessed
+    attr_accessor :always_reload
+
+    # Whether to load all configuration files upon creation
+    # @note This does not prevent +:always_reload+ from working.
+    attr_accessor :preload
+
+    # Whether to freeze all loaded objects. Useful in production environments.
+    attr_accessor :freeze
+
+    # Constructs a new {Figgy::Configuration Figgy::Configuration} instance.
+    #
+    # By default, uses a +root+ of the current directory, and defines handlers
+    # for +.yml+, +.yaml+, +.yml.erb+, +.yaml.erb+, and +.json+.
     def initialize
       self.root = Dir.pwd
       @handlers = []
@@ -29,42 +46,68 @@ class Figgy
       @root = File.expand_path(path)
     end
 
+    # @see #always_reload=
     def always_reload?
       !!@always_reload
     end
 
+    # @see #preload=
     def preload?
       !!@preload
     end
 
+    # @see #freeze=
     def freeze?
       !!@freeze
     end
 
+    # Adds an overlay named +name+, found at +value+.
+    #
+    # If a block is given, yields to the block to determine +value+.
+    #
+    # @param name an internal name for the overlay
+    # @param value the value of the overlay
+    # @example An environment overlay
+    #   config.define_overlay(:environment) { Rails.env }
     def define_overlay(name, value = nil)
       value = yield if block_given?
       @overlays << [name, value]
     end
 
+    # Adds an overlay using the combined values of other overlays.
+    #
+    # @example Searches for files in 'production_US'
+    #   config.define_overlay :environment, 'production'
+    #   config.define_overlay :country, 'US'
+    #   config.define_combined_overlay :environment, :country
     def define_combined_overlay(*names)
       combined_name = names.join("_").to_sym
       value = names.map { |name| overlay_value(name) }.join("_")
       @overlays << [combined_name, value]
     end
 
+    # @return [Array<String>] the list of directories to search for config files
     def overlay_dirs
       return [@root] if @overlays.empty?
       overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
     end
 
+    # Adds a new handler for files with any extension in +extensions+.
+    #
+    # @example Adding an XML handler
+    #   config.define_handler 'xml' do |body|
+    #     Hash.from_xml(body)
+    #   end
     def define_handler(*extensions, &block)
       @handlers += extensions.map { |ext| [ext, block] }
     end
 
+    # @return [Array<String>] the list of recognized extensions
     def extensions
       @handlers.map { |ext, handler| ext }
     end
 
+    # @return [Proc] the handler for a given filename
     def handler_for(filename)
       match = @handlers.find { |ext, handler| filename =~ /\.#{ext}$/ }
       match && match.last
