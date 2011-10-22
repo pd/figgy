@@ -8,7 +8,7 @@ any other arbitrary thing you happen to come up with.
 [![Build Status](https://secure.travis-ci.org/pd/figgy.png)](http://travis-ci.org/pd/figgy)
 
 ## Documentation
-[yardocs](http://rdoc.info/pd/figgy)
+[yardocs](http://rdoc.info/github/pd/figgy/master/frames)
 
 ## Installation
 
