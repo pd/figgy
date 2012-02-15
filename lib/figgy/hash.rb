@@ -43,7 +43,7 @@ class Figgy
     end
 
     def method_missing(m, *args, &block)
-      if m =~ /=$/
+      if m.to_s.end_with? "="
         self[m.to_s.chop] = args.shift
       else
         self[m]
