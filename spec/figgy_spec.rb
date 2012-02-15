@@ -101,6 +101,17 @@ describe Figgy do
       second[:still].should == "a dottable hash"
       second["still"].should == "a dottable hash"
     end
+
+    it "supports dottable and indifferent setting" do
+      write_config 'values', "number: 1"
+      config = test_config
+      config.values["number"] = 2
+      config.values.number.should == 2
+      config.values[:number] = 3
+      config.values.number.should == 3
+      config.values.number = 4
+      config.values.number.should == 4
+    end
   end
 
   context "overlays" do
