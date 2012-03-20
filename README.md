@@ -41,6 +41,19 @@ Access it as a dottable, indifferent-access hash:
     AppConfig["foo"]["some_key"]
     AppConfig[:foo].some_key
 
+Multiple root directories may be specified, so that configuration files live in
+more than one place (say, in gems):
+
+    AppConfig = Figgy.build do |config|
+      config.root = Rails.root.join('etc')
+      config.add_root Rails.root.join('vendor/etc')
+    end
+
+Precedence of root directories is in reverse order of definition, such that the
+root directory added first (typically the one immediately within the application)
+has highest precedence. In this way, defaults can be inherited from libraries,
+but then overridden when necessary within the application.
+
 ## Thanks
 
 This was written on [Enova Financial's](http://www.enovafinancial.com) dime/time.

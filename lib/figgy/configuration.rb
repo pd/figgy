@@ -1,7 +1,7 @@
 class Figgy
   class Configuration
-    # The directory in which to search for configuration files
-    attr_reader :root
+    # The directories in which to search for configuration files
+    attr_reader :roots
 
     # The list of defined overlays
     attr_reader :overlays
@@ -21,7 +21,7 @@ class Figgy
     # By default, uses a +root+ of the current directory, and defines handlers
     # for +.yml+, +.yaml+, +.yml.erb+, +.yaml.erb+, and +.json+.
     def initialize
-      self.root = Dir.pwd
+      @roots    = [Dir.pwd]
       @handlers = []
       @overlays = []
       @always_reload = false
@@ -43,7 +43,11 @@ class Figgy
     end
 
     def root=(path)
-      @root = File.expand_path(path)
+      @roots = [File.expand_path(path)]
+    end
+
+    def add_root(path)
+      @roots.unshift File.expand_path(path)
     end
 
     # @see #always_reload=
@@ -88,8 +92,10 @@ class Figgy
 
     # @return [Array<String>] the list of directories to search for config files
     def overlay_dirs
-      return [@root] if @overlays.empty?
-      overlay_values.map { |v| v ? File.join(@root, v) : @root }.uniq
+      return @roots if @overlays.empty?
+      overlay_values.map { |overlay|
+        @roots.map { |root| overlay ? File.join(root, overlay) : root }
+      }.flatten.uniq
     end
 
     # Adds a new handler for files with any extension in +extensions+.
