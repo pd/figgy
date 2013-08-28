@@ -112,6 +112,39 @@ describe Figgy do
       config.values.number = 4
       config.values.number.should == 4
     end
+
+    context "performing basic hash operations" do
+      let(:config) do
+        write_config 'values', <<-YML
+        with:
+          one: 1
+          two: 2
+        without:
+          two: 2
+        another:
+          three: 3
+        altogether:
+          one: 1
+          two: 2
+          three: 3
+        YML
+        test_config
+      end
+
+      it "can delete a key" do
+        config.values.with.delete(:one).should == 1
+        config.values.with.should == config.values.without
+      end
+
+      it "can look up values for a list of keys" do
+        config.values.with.values_at(:one,:two).should == [1,2]
+      end
+
+      it "can merge with another hash" do
+        config.values.with.merge(config.values.another).should == config.values.altogether
+      end
+    end
+
   end
 
   context "multiple roots" do
