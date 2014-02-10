@@ -343,12 +343,12 @@ describe Figgy do
 
   context "freezing" do
     it "leaves results unfrozen by default" do
-      write_config 'values', 'foo: 1'
+      write_config 'values', "foo: '1'"
       test_config.values.foo.should_not be_frozen
     end
 
     it "freezes the results when config.freeze = true" do
-      write_config 'values', 'foo: 1'
+      write_config 'values', "foo: '1'"
       config = test_config do |config|
         config.freeze = true
       end
