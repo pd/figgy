@@ -54,6 +54,17 @@ root directory added first (typically the one immediately within the application
 has highest precedence. In this way, defaults can be inherited from libraries,
 but then overridden when necessary within the application.
 
+## Caveats
+
+Because the objects exposed by figgy are often hashes, all of the instance methods
+of Hash (and, of course, Enumerable) are available along the chain. But note that
+this means you can not use key names such as `size` or `each` with the dottable
+access style:
+
+    AppConfig.price.bulk   #=> 100.00
+    AppConfig.price.each   #=> attempts to invoke Hash#each
+    AppConfig.price[:each] #=> 50.00
+
 ## Thanks
 
 This was written on [Enova Financial's](http://www.enovafinancial.com) dime/time.
