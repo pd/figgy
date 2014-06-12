@@ -153,6 +153,23 @@ describe Figgy do
     end
   end
 
+  context 'oddities' do
+    it "returns false for empty files (cf. YAML.load(''))" do
+      write_config 'empty', ''
+      test_config.empty.should == false
+    end
+
+    it "returns false for files containing a literal false" do
+      write_config 'maybe', 'false'
+      test_config.maybe.should == false
+    end
+
+    it "returns nil when explicitly set to that value in the YAML file" do
+      write_config 'reason_to_do_this', nil.to_yaml
+      test_config.reason_to_do_this.should == nil
+    end
+  end
+
   context "multiple roots" do
     it "can be told to read from multiple directories" do
       write_config 'root1/values', 'foo: 1'

@@ -17,7 +17,12 @@ class Figgy
     # @return Whatever was in the config file loaded
     # @raise [Figgy::FileNotFound] if no config file could be found for +name+
     def load(name)
-      result = files_for(name).reduce(nil) do |result, file|
+      files = files_for(name)
+      if files.empty?
+        raise(Figgy::FileNotFound, "Can't find config files for key: #{name.inspect}")
+      end
+
+      result = files.reduce(nil) do |result, file|
         object = @config.handler_for(file).call(File.read(file))
         if result && result.respond_to?(:merge)
           deep_merge(result, object)
@@ -26,7 +31,6 @@ class Figgy
         end
       end
 
-      raise(Figgy::FileNotFound, "Can't find config files for key: #{name.inspect}") unless result
       deep_freeze(to_figgy_hash(result))
     end
 
