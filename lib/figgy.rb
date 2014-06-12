@@ -42,6 +42,10 @@ class Figgy
     end
   end
 
+  def [](key)
+    @store.get(key)
+  end
+
   def method_missing(m, *args, &block)
     @store.get(m)
   end

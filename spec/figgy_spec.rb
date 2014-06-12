@@ -113,6 +113,13 @@ describe Figgy do
       config.values.number.should == 4
     end
 
+    it "supports indifferent hash notation on the top-level config object" do
+      write_config 'values', "number: 1"
+      config = test_config
+      config['values'].should == config.values
+      config[:values].should  == config.values
+    end
+
     context "performing basic hash operations" do
       let(:config) do
         write_config 'values', <<-YML
@@ -144,7 +151,6 @@ describe Figgy do
         config.values.with.merge(config.values.another).should == config.values.altogether
       end
     end
-
   end
 
   context "multiple roots" do
