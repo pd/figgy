@@ -7,7 +7,7 @@ describe Figgy do
     bar: 2
     YML
 
-    test_config.values.should == { "foo" => 1, "bar" => 2 }
+    expect(test_config.values).to eq({ "foo" => 1, "bar" => 2 })
   end
 
   it "raises an exception if the file can't be found" do
@@ -19,30 +19,30 @@ describe Figgy do
     write_config 'wtf', 'bar: 2'
 
     config = test_config
-    config.inspect.should == "#<Figgy (empty)>"
+    expect(config.inspect).to eq("#<Figgy (empty)>")
 
     config.values
-    config.inspect.should == "#<Figgy (1 keys): values>"
+    expect(config.inspect).to eq("#<Figgy (1 keys): values>")
 
     config.wtf
-    config.inspect.should == "#<Figgy (2 keys): values wtf>"
+    expect(config.inspect).to eq("#<Figgy (2 keys): values wtf>")
   end
 
   context "multiple extensions" do
     it "supports .yaml" do
       write_config 'values.yaml', 'foo: 1'
-      test_config.values.foo.should == 1
+      expect(test_config.values.foo).to eq(1)
     end
 
     it "supports .yml.erb and .yaml.erb" do
       write_config 'values.yml.erb', '<%= "foo" %>: <%= 1 %>'
       write_config 'values.yaml.erb', '<%= "foo" %>: <%= 2 %>'
-      test_config.values.foo.should == 2
+      expect(test_config.values.foo).to eq(2)
     end
 
     it "supports .json" do
       write_config "values.json", '{ "json": true }'
-      test_config.values.json.should be_true
+      expect(test_config.values.json).to be true
     end
 
     it "loads in the order named" do
@@ -52,7 +52,7 @@ describe Figgy do
       config = test_config do |config|
         config.define_handler('yml', 'yaml') { |body| YAML.load(body) }
       end
-      config.values.foo.should == 2
+      expect(config.values.foo).to eq(2)
     end
   end
 
@@ -64,9 +64,9 @@ describe Figgy do
       YML
 
       config = test_config
-      config.values.outer.should == { "also" => "dottable" }
-      config.values["outer"].should == { "also" => "dottable" }
-      config.values[:outer].should == { "also" => "dottable" }
+      expect(config.values.outer).to eq({ "also" => "dottable" })
+      expect(config.values["outer"]).to eq({ "also" => "dottable" })
+      expect(config.values[:outer]).to eq({ "also" => "dottable" })
     end
 
     it "makes a hash inside the hash result dottable and indifferent" do
@@ -76,9 +76,9 @@ describe Figgy do
       YML
 
       config = test_config
-      config.values.outer.also.should == "dottable"
-      config.values.outer["also"].should == "dottable"
-      config.values.outer[:also].should == "dottable"
+      expect(config.values.outer.also).to eq("dottable")
+      expect(config.values.outer["also"]).to eq("dottable")
+      expect(config.values.outer[:also]).to eq("dottable")
     end
 
     it "makes a hash inside an array result dottable and indifferent" do
@@ -90,34 +90,34 @@ describe Figgy do
       YML
 
       config = test_config
-      config.values.outer.size.should == 2
+      expect(config.values.outer.size).to eq(2)
       first, second = *config.values.outer
 
-      first.should == { "in" => "an", "array" => "it is" }
-      first[:in].should == "an"
-      first.array.should == "it is"
+      expect(first).to eq({ "in" => "an", "array" => "it is" })
+      expect(first[:in]).to eq("an")
+      expect(first.array).to eq("it is")
 
-      second.still.should == "a dottable hash"
-      second[:still].should == "a dottable hash"
-      second["still"].should == "a dottable hash"
+      expect(second.still).to eq("a dottable hash")
+      expect(second[:still]).to eq("a dottable hash")
+      expect(second["still"]).to eq("a dottable hash")
     end
 
     it "supports dottable and indifferent setting" do
       write_config 'values', "number: 1"
       config = test_config
       config.values["number"] = 2
-      config.values.number.should == 2
+      expect(config.values.number).to eq(2)
       config.values[:number] = 3
-      config.values.number.should == 3
+      expect(config.values.number).to eq(3)
       config.values.number = 4
-      config.values.number.should == 4
+      expect(config.values.number).to eq(4)
     end
 
     it "supports indifferent hash notation on the top-level config object" do
       write_config 'values', "number: 1"
       config = test_config
-      config['values'].should == config.values
-      config[:values].should  == config.values
+      expect(config['values']).to eq(config.values)
+      expect(config[:values]).to  eq(config.values)
     end
 
     context "performing basic hash operations" do
@@ -139,16 +139,16 @@ describe Figgy do
       end
 
       it "can delete a key" do
-        config.values.with.delete(:one).should == 1
-        config.values.with.should == config.values.without
+        expect(config.values.with.delete(:one)).to eq(1)
+        expect(config.values.with).to eq(config.values.without)
       end
 
       it "can look up values for a list of keys" do
-        config.values.with.values_at(:one,:two).should == [1,2]
+        expect(config.values.with.values_at(:one,:two)).to eq([1,2])
       end
 
       it "can merge with another hash" do
-        config.values.with.merge(config.values.another).should == config.values.altogether
+        expect(config.values.with.merge(config.values.another)).to eq(config.values.altogether)
       end
     end
   end
@@ -156,17 +156,17 @@ describe Figgy do
   context 'oddities' do
     it "returns false for empty files (cf. YAML.load(''))" do
       write_config 'empty', ''
-      test_config.empty.should == false
+      expect(test_config.empty).to eq(false)
     end
 
     it "returns false for files containing a literal false" do
       write_config 'maybe', 'false'
-      test_config.maybe.should == false
+      expect(test_config.maybe).to eq(false)
     end
 
     it "returns nil when explicitly set to that value in the YAML file" do
       write_config 'reason_to_do_this', nil.to_yaml
-      test_config.reason_to_do_this.should == nil
+      expect(test_config.reason_to_do_this).to eq(nil)
     end
   end
 
@@ -180,8 +180,8 @@ describe Figgy do
         config.add_root File.join(current_dir, 'root2')
       end
 
-      config.values.foo.should == 1
-      config.values.bar.should == 2
+      expect(config.values.foo).to eq(1)
+      expect(config.values.bar).to eq(2)
     end
 
     it "supports overlays in each root" do
@@ -196,8 +196,8 @@ describe Figgy do
         config.define_overlay :environment, 'prod'
       end
 
-      config.values.foo.should == 2
-      config.values.bar.should == 2
+      expect(config.values.foo).to eq(2)
+      expect(config.values.bar).to eq(2)
     end
 
     it "reads from roots in *reverse* order of definition" do
@@ -211,14 +211,14 @@ describe Figgy do
         config.define_overlay :environment, 'prod'
       end
 
-      config.values.foo.should == 2
+      expect(config.values.foo).to eq(2)
     end
   end
 
   context "overlays" do
     it "defaults to no overlay, thus reading directly from the config root" do
       write_config 'values', "foo: 1"
-      test_config.values.should == { "foo" => 1 }
+      expect(test_config.values).to eq({ "foo" => 1 })
     end
 
     it "interprets a nil overlay value as an indication to read from the config root" do
@@ -226,7 +226,7 @@ describe Figgy do
       config = test_config do |config|
         config.define_overlay :default, nil
       end
-      config.values.should == { "foo" => 1 }
+      expect(config.values).to eq({ "foo" => 1 })
     end
 
     it "allows the overlay's value to be the result of a block" do
@@ -234,7 +234,7 @@ describe Figgy do
       config = test_config do |config|
         config.define_overlay(:environment) { 'prod' }
       end
-      config.values.should == { "foo" => 1 }
+      expect(config.values).to eq({ "foo" => 1 })
     end
 
     it "overwrites values if the config file does not define a hash" do
@@ -246,7 +246,7 @@ describe Figgy do
         config.define_overlay :environment, 'prod'
       end
 
-      config.some_string.should == "foo bar baz quux"
+      expect(config.some_string).to eq("foo bar baz quux")
     end
 
     it "deep merges hash contents from overlays" do
@@ -267,7 +267,7 @@ describe Figgy do
         config.define_overlay :environment, 'prod'
       end
 
-      config.values.should == { "foo" => { "bar" => 1, "baz" => 3 }, "quux" => "hi!" }
+      expect(config.values).to eq({ "foo" => { "bar" => 1, "baz" => 3 }, "quux" => "hi!" })
     end
 
     it "can use both a nil overlay and an overlay with a value" do
@@ -277,7 +277,7 @@ describe Figgy do
         config.define_overlay :default, nil
         config.define_overlay :environment, 'prod'
       end
-      config.values.should == { "foo" => 2, "bar" => 2 }
+      expect(config.values).to eq({ "foo" => 2, "bar" => 2 })
     end
 
     it "reads from overlays in order of definition" do
@@ -302,7 +302,7 @@ describe Figgy do
         config.define_overlay :local, 'local'
       end
 
-      config.values.should == { "foo" => 1, "bar" => 2, "baz" => 3 }
+      expect(config.values).to eq({ "foo" => 1, "bar" => 2, "baz" => 3 })
     end
   end
 
@@ -319,7 +319,7 @@ describe Figgy do
         config.define_combined_overlay :environment, :country
       end
 
-      config.keys.should == { "foo" => 3 }
+      expect(config.keys).to eq({ "foo" => 3 })
     end
   end
 
@@ -329,10 +329,10 @@ describe Figgy do
       config = test_config do |config|
         config.always_reload = true
       end
-      config.values.should == { "foo" => 1 }
+      expect(config.values).to eq({ "foo" => 1 })
 
       write_config 'values', 'foo: bar'
-      config.values.should == { "foo" => "bar" }
+      expect(config.values).to eq({ "foo" => "bar" })
     end
 
     it "does not reload when config.always_reload = false" do
@@ -340,10 +340,10 @@ describe Figgy do
       config = test_config do |config|
         config.always_reload = false
       end
-      config.values.should == { "foo" => 1 }
+      expect(config.values).to eq({ "foo" => 1 })
 
       write_config 'values', 'foo: bar'
-      config.values.should == { "foo" => 1 }
+      expect(config.values).to eq({ "foo" => 1 })
     end
   end
 
@@ -362,8 +362,8 @@ describe Figgy do
       write_config 'prod/values', 'foo: 3'
       write_config 'prod_only', 'bar: quux'
 
-      config.values['foo'].should == 2
-      config.prod_only['bar'].should == 'baz'
+      expect(config.values['foo']).to eq(2)
+      expect(config.prod_only['bar']).to eq('baz')
     end
 
     it "still works with multiple extension support" do
@@ -379,7 +379,7 @@ describe Figgy do
       end
 
       finder = config.instance_variable_get(:@finder)
-      finder.all_key_names.should == ['values', 'lonely', 'json_values']
+      expect(finder.all_key_names).to eq(['values', 'lonely', 'json_values'])
     end
 
     it "still supports reloading when preloading is enabled" do
@@ -390,17 +390,17 @@ describe Figgy do
         config.always_reload = true
       end
 
-      config.values['foo'].should == 1
+      expect(config.values['foo']).to eq(1)
 
       write_config 'values', 'foo: 2'
-      config.values['foo'].should == 2
+      expect(config.values['foo']).to eq(2)
     end
   end
 
   context "freezing" do
     it "leaves results unfrozen by default" do
       write_config 'values', "foo: '1'"
-      test_config.values.foo.should_not be_frozen
+      expect(test_config.values.foo).not_to be_frozen
     end
 
     it "freezes the results when config.freeze = true" do
@@ -408,7 +408,7 @@ describe Figgy do
       config = test_config do |config|
         config.freeze = true
       end
-      config.values.should be_frozen
+      expect(config.values).to be_frozen
     end
 
     it "freezes all the way down" do
@@ -430,7 +430,7 @@ describe Figgy do
     end
 
     def assert_deeply_frozen(obj)
-      obj.should be_frozen
+      expect(obj).to be_frozen
       case obj
       when Hash then obj.each { |k, v| assert_deeply_frozen(k); assert_deeply_frozen(v) }
       when Array then obj.each { |v| assert_deeply_frozen(v) }
