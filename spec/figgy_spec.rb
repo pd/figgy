@@ -113,6 +113,12 @@ describe Figgy do
       expect(config.values.number).to eq(4)
     end
 
+    it "answers respond_to? accurately for known keys" do
+      write_config 'values', 'number: 1'
+      expect(test_config).to respond_to(:values)
+      expect(test_config).not_to respond_to(:unknown)
+    end
+
     it "supports indifferent hash notation on the top-level config object" do
       write_config 'values', "number: 1"
       config = test_config

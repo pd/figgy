@@ -50,6 +50,12 @@ class Figgy
     @store.get(m)
   end
 
+  def respond_to?(m)
+    @store.get(m) != nil
+  rescue Figgy::FileNotFound
+    false
+  end
+
   def inspect
     if @store.size > 0
       key_names = @store.keys.sort
