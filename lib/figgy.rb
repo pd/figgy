@@ -50,7 +50,7 @@ class Figgy
     @store.get(m)
   end
 
-  def respond_to?(m)
+  def respond_to_missing?(m, *)
     @store.get(m) != nil
   rescue Figgy::FileNotFound
     false

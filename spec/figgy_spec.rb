@@ -114,9 +114,23 @@ describe Figgy do
     end
 
     it "answers respond_to? accurately for known keys" do
-      write_config 'values', 'number: 1'
-      expect(test_config).to respond_to(:values)
-      expect(test_config).not_to respond_to(:unknown)
+      write_config 'values', <<-YML
+      outer:
+        inner:
+          still: a hash
+      YML
+
+      config = test_config
+      expect(config).to respond_to(:values)
+      expect(config).not_to respond_to(:unknown)
+
+      expect(config.values).to respond_to(:outer)
+      expect(config.values.outer).to respond_to(:inner)
+      expect(config.values.outer.inner).to respond_to(:still)
+
+      # Ensure plain ol' respond_to? still works, too.
+      expect(config).to respond_to(:inspect)
+      expect(config.values).to respond_to(:[])
     end
 
     it "supports indifferent hash notation on the top-level config object" do

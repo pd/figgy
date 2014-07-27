@@ -36,6 +36,10 @@ class Figgy
       self
     end
 
+    def respond_to_missing?(m, *)
+      key?(convert_key(m)) || super
+    end
+
     protected
 
     def convert_key(key)
