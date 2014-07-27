@@ -6,6 +6,8 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::HTMLFormatter,
 ]
 
+SimpleCov.start
+
 require 'rspec'
 require 'figgy'
 require 'aruba/api'
