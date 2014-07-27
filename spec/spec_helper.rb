@@ -1,6 +1,10 @@
 require 'simplecov'
+require 'coveralls'
 
-SimpleCov.start
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  Coveralls::SimpleCov::Formatter,
+  SimpleCov::Formatter::HTMLFormatter,
+]
 
 require 'rspec'
 require 'figgy'

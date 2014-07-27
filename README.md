@@ -1,11 +1,14 @@
 # figgy
 
+[![Gem Version](https://badge.fury.io/rb/figgy.svg)](http://badge.fury.io/rb/figgy)
+[![Build Status](https://secure.travis-ci.org/pd/figgy.png)](http://travis-ci.org/pd/figgy)
+[![Dependency Status](https://gemnasium.com/pd/figgy.svg)](https://gemnasium.com/pd/figgy)
+[![Code Climate](https://codeclimate.com/github/pd/figgy.png)](https://codeclimate.com/github/pd/figgy)
+[![Coverage Status](https://coveralls.io/repos/pd/figgy/badge.png)](https://coveralls.io/r/pd/figgy)
+
 Provides convenient access to configuration files in various formats, with
 support for overriding the values based on environment, hostname, locale, or
 any other arbitrary thing you happen to come up with.
-
-## Travis-CI Build Status
-[![Build Status](https://secure.travis-ci.org/pd/figgy.png)](http://travis-ci.org/pd/figgy)
 
 ## Documentation
 [yardocs](http://rdoc.info/github/pd/figgy/master/frames)
