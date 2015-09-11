@@ -22,6 +22,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", '~> 3.0'
   s.add_development_dependency "simplecov", '~> 0.9'
   s.add_development_dependency "coveralls"
-  s.add_development_dependency "aruba"
   s.add_development_dependency "heredoc_unindent"
 end
