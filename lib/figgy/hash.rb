@@ -36,6 +36,10 @@ class Figgy
       self
     end
 
+    def respond_to?(m, *)
+      super || key?(convert_key(m))
+    end if RUBY_VERSION == "1.8.7"
+
     def respond_to_missing?(m, *)
       key?(convert_key(m)) || super
     end
