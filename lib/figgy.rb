@@ -50,6 +50,10 @@ class Figgy
     @store.get(m)
   end
 
+  def respond_to?(m, *)
+    super || respond_to_missing?(m)
+  end if RUBY_VERSION == "1.8.7"
+
   def respond_to_missing?(m, *)
     @store.get(m) != nil
   rescue Figgy::FileNotFound

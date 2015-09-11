@@ -188,6 +188,11 @@ describe Figgy do
       write_config 'reason_to_do_this', nil.to_yaml
       expect(test_config.reason_to_do_this).to eq(nil)
     end
+
+    it "prioritizes hash methods over keys in the YAML file" do
+      write_config 'bad', { 'default' => 'something'}.to_yaml
+      expect(test_config.bad.default).to eq(nil)
+    end
   end
 
   context "multiple roots" do

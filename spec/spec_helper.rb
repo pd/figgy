@@ -10,10 +10,13 @@ SimpleCov.start
 
 require 'rspec'
 require 'figgy'
-require 'aruba/api'
 require 'heredoc_unindent'
 
 module Figgy::SpecHelpers
+  def current_dir
+    File.join(Dir.getwd, 'tmp')
+  end
+
   def test_config
     Figgy.build do |config|
       config.root = current_dir
@@ -23,12 +26,17 @@ module Figgy::SpecHelpers
 
   def write_config(filename, contents)
     filename = "#{filename}.yml" unless filename =~ /\./
-    write_file(filename, contents.unindent)
+    full_filename = File.join(current_dir, filename)
+
+    FileUtils.mkdir_p(File.dirname(full_filename))
+
+    file = File.new(full_filename, "w+")
+    file.write(contents)
+    file.close
   end
 end
 
 RSpec.configure do |c|
-  c.include Aruba::Api
   c.include Figgy::SpecHelpers
 
   c.after { FileUtils.rm_rf(current_dir) }
