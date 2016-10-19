@@ -128,7 +128,7 @@ class Figgy
     end
 
     def overlay_values
-      @overlays.map &:last
+      @overlays.map(&:last)
     end
   end
 end
