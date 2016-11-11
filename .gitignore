@@ -1,6 +1,7 @@
 *.gem
 .bundle
 Gemfile.lock
+*.gemfile.lock
 pkg/*
 coverage
 tmp/
