@@ -49,8 +49,8 @@ describe Figgy do
       write_config 'values.yml', 'foo: 1'
       write_config 'values.yaml', 'foo: 2'
 
-      config = test_config do |config|
-        config.define_handler('yml', 'yaml') { |body| YAML.load(body) }
+      config = test_config do |cfg|
+        cfg.define_handler('yml', 'yaml') { |body| YAML.load(body) }
       end
       expect(config.values.foo).to eq(2)
     end
@@ -200,9 +200,9 @@ describe Figgy do
       write_config 'root1/values', 'foo: 1'
       write_config 'root2/values', 'bar: 2'
 
-      config = test_config do |config|
-        config.root = File.join(current_dir, 'root1')
-        config.add_root File.join(current_dir, 'root2')
+      config = test_config do |cfg|
+        cfg.root = File.join(current_dir, 'root1')
+        cfg.add_root File.join(current_dir, 'root2')
       end
 
       expect(config.values.foo).to eq(1)
@@ -215,10 +215,10 @@ describe Figgy do
       write_config 'root2/values',      'bar: 1'
       write_config 'root2/prod/values', 'bar: 2'
 
-      config = test_config do |config|
-        config.root = File.join(current_dir, 'root1')
-        config.add_root File.join(current_dir, 'root2')
-        config.define_overlay :environment, 'prod'
+      config = test_config do |cfg|
+        cfg.root = File.join(current_dir, 'root1')
+        cfg.add_root File.join(current_dir, 'root2')
+        cfg.define_overlay :environment, 'prod'
       end
 
       expect(config.values.foo).to eq(2)
@@ -230,10 +230,10 @@ describe Figgy do
       write_config 'root1/prod/values', 'foo: 2'
       write_config 'root2/prod/values', 'foo: 3'
 
-      config = test_config do |config|
-        config.root = File.join(current_dir, 'root1')
-        config.add_root File.join(current_dir, 'root2')
-        config.define_overlay :environment, 'prod'
+      config = test_config do |cfg|
+        cfg.root = File.join(current_dir, 'root1')
+        cfg.add_root File.join(current_dir, 'root2')
+        cfg.define_overlay :environment, 'prod'
       end
 
       expect(config.values.foo).to eq(2)
@@ -248,16 +248,16 @@ describe Figgy do
 
     it "interprets a nil overlay value as an indication to read from the config root" do
       write_config 'values', "foo: 1"
-      config = test_config do |config|
-        config.define_overlay :default, nil
+      config = test_config do |cfg|
+        cfg.define_overlay :default, nil
       end
       expect(config.values).to eq({ "foo" => 1 })
     end
 
     it "allows the overlay's value to be the result of a block" do
       write_config 'prod/values', "foo: 1"
-      config = test_config do |config|
-        config.define_overlay(:environment) { 'prod' }
+      config = test_config do |cfg|
+        cfg.define_overlay(:environment) { 'prod' }
       end
       expect(config.values).to eq({ "foo" => 1 })
     end
@@ -266,9 +266,9 @@ describe Figgy do
       write_config 'some_string', "foo bar baz"
       write_config 'prod/some_string', "foo bar baz quux"
 
-      config = test_config do |config|
-        config.define_overlay :default, nil
-        config.define_overlay :environment, 'prod'
+      config = test_config do |cfg|
+        cfg.define_overlay :default, nil
+        cfg.define_overlay :environment, 'prod'
       end
 
       expect(config.some_string).to eq("foo bar baz quux")
@@ -287,9 +287,9 @@ describe Figgy do
       quux: hi!
       YML
 
-      config = test_config do |config|
-        config.define_overlay :default, 'defaults'
-        config.define_overlay :environment, 'prod'
+      config = test_config do |cfg|
+        cfg.define_overlay :default, 'defaults'
+        cfg.define_overlay :environment, 'prod'
       end
 
       expect(config.values).to eq({ "foo" => { "bar" => 1, "baz" => 3 }, "quux" => "hi!" })
@@ -298,9 +298,9 @@ describe Figgy do
     it "can use both a nil overlay and an overlay with a value" do
       write_config 'values', "foo: 1\nbar: 2"
       write_config 'prod/values', "foo: 2"
-      config = test_config do |config|
-        config.define_overlay :default, nil
-        config.define_overlay :environment, 'prod'
+      config = test_config do |cfg|
+        cfg.define_overlay :default, nil
+        cfg.define_overlay :environment, 'prod'
       end
       expect(config.values).to eq({ "foo" => 2, "bar" => 2 })
     end
@@ -321,10 +321,10 @@ describe Figgy do
       baz: 3
       YML
 
-      config = test_config do |config|
-        config.define_overlay :default, 'defaults'
-        config.define_overlay :environment, 'prod'
-        config.define_overlay :local, 'local'
+      config = test_config do |cfg|
+        cfg.define_overlay :default, 'defaults'
+        cfg.define_overlay :environment, 'prod'
+        cfg.define_overlay :local, 'local'
       end
 
       expect(config.values).to eq({ "foo" => 1, "bar" => 2, "baz" => 3 })
@@ -337,11 +337,11 @@ describe Figgy do
       write_config 'prod/keys', "foo: 2"
       write_config 'prod_US/keys', "foo: 3"
 
-      config = test_config do |config|
-        config.define_overlay :default, nil
-        config.define_overlay :environment, 'prod'
-        config.define_overlay :country, 'US'
-        config.define_combined_overlay :environment, :country
+      config = test_config do |cfg|
+        cfg.define_overlay :default, nil
+        cfg.define_overlay :environment, 'prod'
+        cfg.define_overlay :country, 'US'
+        cfg.define_combined_overlay :environment, :country
       end
 
       expect(config.keys).to eq({ "foo" => 3 })
@@ -351,8 +351,8 @@ describe Figgy do
   context "reloading" do
     it "can reload on each access when config.always_reload = true" do
       write_config 'values', 'foo: 1'
-      config = test_config do |config|
-        config.always_reload = true
+      config = test_config do |cfg|
+        cfg.always_reload = true
       end
       expect(config.values).to eq({ "foo" => 1 })
 
@@ -362,8 +362,8 @@ describe Figgy do
 
     it "does not reload when config.always_reload = false" do
       write_config 'values', 'foo: 1'
-      config = test_config do |config|
-        config.always_reload = false
+      config = test_config do |cfg|
+        cfg.always_reload = false
       end
       expect(config.values).to eq({ "foo" => 1 })
 
@@ -378,10 +378,10 @@ describe Figgy do
       write_config 'prod/values', 'foo: 2'
       write_config 'prod/prod_only', 'bar: baz'
 
-      config = test_config do |config|
-        config.define_overlay :default, nil
-        config.define_overlay :environment, 'prod'
-        config.preload = true
+      config = test_config do |cfg|
+        cfg.define_overlay :default, nil
+        cfg.define_overlay :environment, 'prod'
+        cfg.preload = true
       end
 
       write_config 'prod/values', 'foo: 3'
@@ -397,10 +397,10 @@ describe Figgy do
       write_config 'prod/lonely.yml', 'only: yml'
       write_config 'local/json_values.json', '{ "json": true }'
 
-      config = test_config do |config|
-        config.define_overlay :default, nil
-        config.define_overlay :environment, 'prod'
-        config.define_overlay :local, 'local'
+      config = test_config do |cfg|
+        cfg.define_overlay :default, nil
+        cfg.define_overlay :environment, 'prod'
+        cfg.define_overlay :local, 'local'
       end
 
       finder = config.instance_variable_get(:@finder)
@@ -410,9 +410,9 @@ describe Figgy do
     it "still supports reloading when preloading is enabled" do
       write_config 'values', 'foo: 1'
 
-      config = test_config do |config|
-        config.preload = true
-        config.always_reload = true
+      config = test_config do |cfg|
+        cfg.preload = true
+        cfg.always_reload = true
       end
 
       expect(config.values['foo']).to eq(1)
@@ -430,8 +430,8 @@ describe Figgy do
 
     it "freezes the results when config.freeze = true" do
       write_config 'values', "foo: '1'"
-      config = test_config do |config|
-        config.freeze = true
+      config = test_config do |cfg|
+        cfg.freeze = true
       end
       expect(config.values).to be_frozen
     end
@@ -446,8 +446,8 @@ describe Figgy do
           - and: an inner hash
       YML
 
-      config = test_config do |config|
-        config.freeze = true
+      config = test_config do |cfg|
+        cfg.freeze = true
       end
 
       expect { config.values.outer.array[2]['and'] = 'foo' }.to raise_error(/can't modify frozen/)

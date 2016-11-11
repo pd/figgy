@@ -22,7 +22,7 @@ class Figgy
         raise(Figgy::FileNotFound, "Can't find config files for key: #{name.inspect}")
       end
 
-      result = files.reduce(nil) do |result, file|
+      final_result = files.reduce(nil) do |result, file|
         object = @config.handler_for(file).call(File.read(file))
         if result && result.respond_to?(:merge)
           deep_merge(result, object)
@@ -31,7 +31,7 @@ class Figgy
         end
       end
 
-      deep_freeze(to_figgy_hash(result))
+      deep_freeze(to_figgy_hash(final_result))
     end
 
     # @param [String] name the configuration key to search for
