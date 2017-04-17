@@ -17,6 +17,10 @@ class Figgy
       super(convert_key(key), value)
     end
 
+    def fetch(key, *extras)
+      super(convert_key(key), *extras)
+    end
+
     def delete(key)
       super(convert_key(key))
     end
@@ -35,6 +39,10 @@ class Figgy
       end
       self
     end
+
+    def dig(*keys)
+      super(*keys.map { |k| convert_key(k) })
+    end if ::Hash.method_defined?(:dig)
 
     def respond_to?(m, *)
       super || key?(convert_key(m))
