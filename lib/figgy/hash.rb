@@ -17,6 +17,10 @@ class Figgy
       super(convert_key(key), value)
     end
 
+    def fetch(key, *extras)
+      super(convert_key(key), *extras)
+    end
+
     def delete(key)
       super(convert_key(key))
     end

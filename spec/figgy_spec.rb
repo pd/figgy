@@ -170,6 +170,20 @@ describe Figgy do
       it "can merge with another hash" do
         expect(config.values.with.merge(config.values.another)).to eq(config.values.altogether)
       end
+
+      it 'can fetch a key with a default value' do
+        expect(config.values.without.fetch('two')).to eq(config.values.without.two)
+        expect(config.values.without.fetch(:two)).to  eq(config.values.without.two)
+
+        expect { config.values.without.fetch('one') }.to raise_error(/key not found/)
+        expect { config.values.without.fetch(:one) }.to  raise_error(/key not found/)
+
+        expect(config.values.without.fetch('one', 1)).to eq 1
+        expect(config.values.without.fetch(:one, 1)).to  eq 1
+
+        expect(config.values.without.fetch('three') { 3 } ).to eq 3
+        expect(config.values.without.fetch(:three) { 3 } ).to  eq 3
+      end
     end
   end
 
