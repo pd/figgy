@@ -40,6 +40,10 @@ class Figgy
       self
     end
 
+    def dig(*keys)
+      super(*keys.map { |k| convert_key(k) })
+    end if ::Hash.method_defined?(:dig)
+
     def respond_to?(m, *)
       super || key?(convert_key(m))
     end if RUBY_VERSION == "1.8.7"
