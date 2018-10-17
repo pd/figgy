@@ -78,6 +78,22 @@ AppConfig.price.each   #=> attempts to invoke Hash#each
 AppConfig.price[:each] #=> 50.00
 ~~~
 
+## Development environment
+
+To avoid having to restart your development server when you make any modification on any configuration file
+
+~~~ruby
+AppConfig = Figgy.build do |config|
+  config.root = Rails.root.join('etc')
+
+  # [...]
+
+  # maybe you need to reload your configuration files at each modification
+  # without having to restart your server
+  config.always_reload = true if Rails.env.development?
+end
+~~~
+
 ## Thanks
 
 This was written on [Enova's](http://www.enova.com) dime/time.
