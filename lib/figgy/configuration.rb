@@ -108,6 +108,17 @@ class Figgy
       @handlers += extensions.map { |ext| [ext, block] }
     end
 
+    # Adds a new handler for files with any extension in +extensions+ or replaces existing ones.
+    #
+    # @example Adding an XML handler
+    #   config.define_handler 'xml' do |body|
+    #     Hash.from_xml(body)
+    #   end
+    def set_handler(*extensions, &block)
+      @handlers = @handlers.select { |ext, _| extensions.exclude?(ext) }
+      @handlers += extensions.map { |ext| [ext, block] }
+    end
+
     # @return [Array<String>] the list of recognized extensions
     def extensions
       @handlers.map { |ext, handler| ext }
